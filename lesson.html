@@ -174,15 +174,107 @@
     font-size: 11px;
     color: var(--text-dim);
   }
+
+  /* WhatsApp button */
+  .wa-wrap{ position: relative; }
+  .wa-btn{
+    font-family: var(--mono);
+    font-size: 12px;
+    background: rgba(62,207,142,0.1);
+    border: 1px solid var(--green);
+    color: var(--green);
+    padding: 8px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .wa-menu{
+    display:none;
+    position:absolute;
+    right:0;
+    top: calc(100% + 8px);
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    min-width: 220px;
+    overflow:hidden;
+    z-index: 20;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  }
+  .wa-menu.open{ display:block; }
+  .wa-menu a{
+    display:block;
+    padding: 12px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .wa-menu a:last-child{ border-bottom:none; }
+  .wa-menu a:hover{ background: var(--green-dim); }
+  .wa-menu .role{
+    display:block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* Team unlock */
+  .team-link{
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    background:none;
+    border:none;
+    cursor:pointer;
+    text-decoration: underline;
+    margin-top: 6px;
+  }
+  .team-form{
+    margin-top: 16px;
+    display:flex;
+    gap:8px;
+    justify-content:center;
+  }
+  .team-form input{
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 13px;
+    width: 180px;
+  }
+  .team-form button{
+    background: var(--text);
+    color: var(--bg);
+    border:none;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor:pointer;
+  }
 </style>
 </head>
 <body>
 
 <header>
   <a class="back" href="index.html">&larr; All levels</a>
-  <div style="text-align:right">
-    <div class="level-tag" id="levelTag">LEVEL —</div>
-    <h1 id="levelTitle">Loading…</h1>
+  <div style="text-align:right; display:flex; align-items:center; gap:16px;">
+    <div class="wa-wrap" id="waWrap" style="display:none;">
+      <button class="wa-btn" id="waBtn">💬 Ask a question on WhatsApp</button>
+      <div class="wa-menu" id="waMenu">
+        <a href="https://wa.me/2349032802731" target="_blank" rel="noopener">Hakimi FX <span class="role">Founder</span></a>
+        <a href="https://wa.me/2348137207992" target="_blank" rel="noopener">Musty FX <span class="role">Team</span></a>
+        <a href="https://wa.me/2348023853147" target="_blank" rel="noopener">Breehamxy FX <span class="role">Team</span></a>
+      </div>
+    </div>
+    <div>
+      <div class="level-tag" id="levelTag">LEVEL —</div>
+      <h1 id="levelTitle">Loading…</h1>
+    </div>
   </div>
 </header>
 
@@ -214,13 +306,30 @@
   const level = parseInt(params.get('level') || '1', 10);
   const levelInfo = LEVELS[level] || LEVELS[1];
 
+  // Team members (founder + team) can unlock everything with a shared
+  // access code, without paying. Stored in this browser once entered.
+  const savedTeamCode = localStorage.getItem('slp_team_code');
+
   // TEMPORARY: for testing before real payments are wired up, an unlocked
   // level can be simulated by adding &test_unlock=1 to the URL.
   const testUnlock = params.get('test_unlock') === '1';
-  const isUnlocked = !levelInfo.locked || testUnlock;
+  let isUnlocked = !levelInfo.locked || testUnlock || !!savedTeamCode;
 
   document.getElementById('levelTag').textContent = `LEVEL ${String(level).padStart(2,'0')}`;
   document.getElementById('levelTitle').textContent = levelInfo.title;
+
+  // Show the WhatsApp button only on levels 5, 6, 7.
+  if (level >= 5 && level <= 7) {
+    document.getElementById('waWrap').style.display = 'block';
+    const waBtn = document.getElementById('waBtn');
+    const waMenu = document.getElementById('waMenu');
+    waBtn.addEventListener('click', () => waMenu.classList.toggle('open'));
+    document.addEventListener('click', (e) => {
+      if (!waBtn.contains(e.target) && !waMenu.contains(e.target)) {
+        waMenu.classList.remove('open');
+      }
+    });
+  }
 
   const chatEl = document.getElementById('chat');
   const lockedArea = document.getElementById('lockedArea');
@@ -229,8 +338,9 @@
   const sendBtn = document.getElementById('sendBtn');
 
   let history = [];
+  let teamCode = savedTeamCode || null;
 
-  if (!isUnlocked) {
+  function renderLocked() {
     footerArea.style.display = 'none';
     lockedArea.innerHTML = `
       <div class="locked-notice">
@@ -238,12 +348,46 @@
         <h2>This level is part of the paid track</h2>
         <p>Levels 4–7 unlock with an SLP School subscription ($40/mo) — that's where entries, timing, and the full SLP strategy live.</p>
         <button class="unlock-btn" id="upgradeBtn">Upgrade to unlock</button>
+        <div><button class="team-link" id="teamLinkBtn">Team member? Unlock with access code</button></div>
+        <div class="team-form" id="teamForm" style="display:none;">
+          <input type="password" id="teamCodeInput" placeholder="Access code">
+          <button id="teamSubmit">Unlock</button>
+        </div>
+        <div id="teamError" style="color:#D14D4D; font-family: var(--mono); font-size:12px; margin-top:10px; display:none;">Incorrect code.</div>
       </div>
     `;
     document.getElementById('upgradeBtn').addEventListener('click', () => {
       alert('Payments aren\'t wired up yet — this is where Stripe checkout will go.');
     });
+    document.getElementById('teamLinkBtn').addEventListener('click', () => {
+      document.getElementById('teamForm').style.display = 'flex';
+    });
+    document.getElementById('teamSubmit').addEventListener('click', checkTeamCode);
+    document.getElementById('teamCodeInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkTeamCode();
+    });
+  }
+
+  async function checkTeamCode() {
+    const code = document.getElementById('teamCodeInput').value.trim();
+    if (!code) return;
+    // Verified server-side on first real message send; here we just store
+    // it and let the tutor function reject it if it's wrong.
+    teamCode = code;
+    localStorage.setItem('slp_team_code', code);
+    isUnlocked = true;
+    startLesson();
+  }
+
+  if (!isUnlocked) {
+    renderLocked();
   } else {
+    startLesson();
+  }
+
+  function startLesson() {
+    lockedArea.innerHTML = '';
+    footerArea.style.display = 'block';
     inputEl.addEventListener('input', () => {
       inputEl.style.height = 'auto';
       inputEl.style.height = Math.min(inputEl.scrollHeight, 140) + 'px';
@@ -294,12 +438,28 @@
           level: level,
           message: text,
           history: history,
-          unlocked: isUnlocked,
+          unlocked: !levelInfo.locked || testUnlock,
+          teamCode: teamCode,
         }),
       });
 
       const data = await res.json();
       typingEl.remove();
+
+      if (res.status === 403) {
+        // Wrong or missing team code / not actually unlocked.
+        localStorage.removeItem('slp_team_code');
+        isUnlocked = false;
+        chatEl.innerHTML = '';
+        renderLocked();
+        const err = document.getElementById('teamError');
+        if (teamCode) {
+          document.getElementById('teamLinkBtn').click();
+          err.style.display = 'block';
+        }
+        sendBtn.disabled = false;
+        return;
+      }
 
       if (!res.ok) {
         addBubble('assistant', 'Something went wrong: ' + (data.error || 'unknown error'));
