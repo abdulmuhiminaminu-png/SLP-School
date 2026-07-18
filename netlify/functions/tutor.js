@@ -36,18 +36,23 @@ exports.handler = async function (event) {
     return { statusCode: 400, body: 'Invalid request body' };
   }
 
-  const { level, message, history, unlocked } = body;
+  const { level, message, history, unlocked, teamCode } = body;
   const levelNum = parseInt(level, 10);
 
   if (!LEVEL_FILES[levelNum]) {
     return { statusCode: 400, body: JSON.stringify({ error: 'Unknown level' }) };
   }
 
+  // Team members (founder + team) can bypass the paywall entirely with a
+  // shared secret code, set in Netlify env vars as TEAM_ACCESS_CODE.
+  const isTeam = !!teamCode && !!process.env.TEAM_ACCESS_CODE && teamCode === process.env.TEAM_ACCESS_CODE;
+
   // Server-side gate: even if someone tampers with the frontend, locked
-  // levels refuse to teach unless the client says the student has paid.
-  // NOTE: this is a placeholder check for now — replace with a real
-  // subscription check (Stripe) before charging anyone for real.
-  if (LOCKED_LEVELS.includes(levelNum) && !unlocked) {
+  // levels refuse to teach unless the client says the student has paid,
+  // OR they're a verified team member.
+  // NOTE: the "unlocked" flag alone is a placeholder for real Stripe
+  // subscription checks — replace before charging anyone for real.
+  if (LOCKED_LEVELS.includes(levelNum) && !unlocked && !isTeam) {
     return {
       statusCode: 403,
       body: JSON.stringify({ error: 'This level requires a subscription.' }),
