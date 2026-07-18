@@ -289,6 +289,7 @@
     <button class="send" id="sendBtn">Send</button>
   </div>
   <div class="hint">The AI only teaches this level's material — ask anything about it.</div>
+  <div class="hint" id="quotaHint" style="display:none;"></div>
 </footer>
 
 <script>
@@ -388,6 +389,7 @@
   function startLesson() {
     lockedArea.innerHTML = '';
     footerArea.style.display = 'block';
+    updateQuotaDisplay();
     inputEl.addEventListener('input', () => {
       inputEl.style.height = 'auto';
       inputEl.style.height = Math.min(inputEl.scrollHeight, 140) + 'px';
@@ -413,6 +415,27 @@
     return div;
   }
 
+  const DAILY_LIMIT = 10;
+
+  function todayKey() {
+    return 'slp_free_count_' + new Date().toISOString().slice(0, 10);
+  }
+
+  function updateQuotaDisplay() {
+    const isFreeLevel = !levelInfo.locked;
+    const quotaEl = document.getElementById('quotaHint');
+    if (!isFreeLevel || teamCode) {
+      quotaEl.style.display = 'none';
+      return;
+    }
+    const used = parseInt(localStorage.getItem(todayKey()) || '0', 10);
+    const remaining = Math.max(0, DAILY_LIMIT - used);
+    quotaEl.style.display = 'block';
+    quotaEl.textContent = remaining > 0
+      ? `${remaining} of ${DAILY_LIMIT} free messages left today`
+      : `You've used today's ${DAILY_LIMIT} free messages — come back tomorrow, or unlock levels 4-7 for full access.`;
+  }
+
   async function sendMessage(forcedText, isOpening) {
     const text = forcedText || inputEl.value.trim();
     if (!text) return;
@@ -421,17 +444,17 @@
     // run up API costs unpredictably. Paid levels and team members skip this.
     const isFreeLevel = !levelInfo.locked;
     if (isFreeLevel && !teamCode) {
-      const today = new Date().toISOString().slice(0, 10);
-      const countKey = 'slp_free_count_' + today;
+      const countKey = todayKey();
       const used = parseInt(localStorage.getItem(countKey) || '0', 10);
-      const DAILY_LIMIT = 15;
 
       if (used >= DAILY_LIMIT) {
         if (!isOpening) addBubble('user', text);
         addBubble('assistant', `You've reached today's free limit (${DAILY_LIMIT} messages). Come back tomorrow, or unlock levels 4-7 for full access anytime.`);
+        updateQuotaDisplay();
         return;
       }
       localStorage.setItem(countKey, String(used + 1));
+      updateQuotaDisplay();
     }
 
     if (!isOpening) {
