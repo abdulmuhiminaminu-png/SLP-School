@@ -88,29 +88,64 @@ Rules:
     { role: 'user', content: message },
   ];
 
+  // Free levels (1-3) run on Gemini's free tier to avoid burning paid
+  // Claude credit on non-paying users. Paid levels + team members get
+  // Claude, since that's what the $40/mo is actually paying for.
+  const useGemini = !LOCKED_LEVELS.includes(levelNum);
+
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-5',
-        max_tokens: 700,
-        system: systemPrompt,
-        messages: messages,
-      }),
-    });
+    let reply;
 
-    if (!response.ok) {
-      const errText = await response.text();
-      return { statusCode: 502, body: JSON.stringify({ error: 'AI request failed', detail: errText }) };
+    if (useGemini) {
+      const geminiRes = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent`,
+        {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            'x-goog-api-key': process.env.GEMINI_API_KEY,
+          },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents: messages.map(m => ({
+              role: m.role === 'assistant' ? 'model' : 'user',
+              parts: [{ text: m.content }],
+            })),
+          }),
+        }
+      );
+
+      if (!geminiRes.ok) {
+        const errText = await geminiRes.text();
+        return { statusCode: 502, body: JSON.stringify({ error: 'AI request failed', detail: errText }) };
+      }
+
+      const geminiData = await geminiRes.json();
+      reply = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    } else {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-api-key': process.env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-5',
+          max_tokens: 700,
+          system: systemPrompt,
+          messages: messages,
+        }),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        return { statusCode: 502, body: JSON.stringify({ error: 'AI request failed', detail: errText }) };
+      }
+
+      const data = await response.json();
+      reply = data.content && data.content[0] ? data.content[0].text : '';
     }
-
-    const data = await response.json();
-    const reply = data.content && data.content[0] ? data.content[0].text : '';
 
     return {
       statusCode: 200,
