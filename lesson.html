@@ -341,6 +341,27 @@
   let history = [];
   let teamCode = savedTeamCode || null;
 
+  const DAILY_LIMIT = 10;
+
+  function todayKey() {
+    return 'slp_free_count_' + new Date().toISOString().slice(0, 10);
+  }
+
+  function updateQuotaDisplay() {
+    const isFreeLevel = !levelInfo.locked;
+    const quotaEl = document.getElementById('quotaHint');
+    if (!isFreeLevel || teamCode) {
+      quotaEl.style.display = 'none';
+      return;
+    }
+    const used = parseInt(localStorage.getItem(todayKey()) || '0', 10);
+    const remaining = Math.max(0, DAILY_LIMIT - used);
+    quotaEl.style.display = 'block';
+    quotaEl.textContent = remaining > 0
+      ? `${remaining} of ${DAILY_LIMIT} free messages left today`
+      : `You've used today's ${DAILY_LIMIT} free messages — come back tomorrow, or unlock levels 4-7 for full access.`;
+  }
+
   function renderLocked() {
     footerArea.style.display = 'none';
     lockedArea.innerHTML = `
@@ -413,27 +434,6 @@
     chatEl.appendChild(div);
     div.scrollIntoView({ behavior: 'smooth', block: 'end' });
     return div;
-  }
-
-  const DAILY_LIMIT = 10;
-
-  function todayKey() {
-    return 'slp_free_count_' + new Date().toISOString().slice(0, 10);
-  }
-
-  function updateQuotaDisplay() {
-    const isFreeLevel = !levelInfo.locked;
-    const quotaEl = document.getElementById('quotaHint');
-    if (!isFreeLevel || teamCode) {
-      quotaEl.style.display = 'none';
-      return;
-    }
-    const used = parseInt(localStorage.getItem(todayKey()) || '0', 10);
-    const remaining = Math.max(0, DAILY_LIMIT - used);
-    quotaEl.style.display = 'block';
-    quotaEl.textContent = remaining > 0
-      ? `${remaining} of ${DAILY_LIMIT} free messages left today`
-      : `You've used today's ${DAILY_LIMIT} free messages — come back tomorrow, or unlock levels 4-7 for full access.`;
   }
 
   async function sendMessage(forcedText, isOpening) {
