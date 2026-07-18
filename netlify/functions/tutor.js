@@ -1,12 +1,13 @@
 // netlify/functions/tutor.js
 //
 // This is the "brain" behind every lesson. It reads the lesson content file
-// for whatever level the student is on, and calls Claude with instructions
+// for whatever level the student is on, and calls Gemini with instructions
 // to teach ONLY from that file — never invent trading content on its own.
 //
 // Setup required before this works:
-//   1. In your Netlify site dashboard: Site settings > Environment variables
-//      Add a variable named ANTHROPIC_API_KEY with your real API key.
+//   1. In your Netlify site dashboard: Site configuration > Environment variables
+//      Add a variable named GEMINI_API_KEY with your real Gemini API key
+//      (get one free, no card needed, at aistudio.google.com).
 //   2. That's it — Netlify runs this automatically at /.netlify/functions/tutor
 
 const fs = require('fs');
@@ -88,64 +89,32 @@ Rules:
     { role: 'user', content: message },
   ];
 
-  // Free levels (1-3) run on Gemini's free tier to avoid burning paid
-  // Claude credit on non-paying users. Paid levels + team members get
-  // Claude, since that's what the $40/mo is actually paying for.
-  const useGemini = !LOCKED_LEVELS.includes(levelNum);
-
   try {
-    let reply;
-
-    if (useGemini) {
-      const geminiRes = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent`,
-        {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-            'x-goog-api-key': process.env.GEMINI_API_KEY,
-          },
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: systemPrompt }] },
-            contents: messages.map(m => ({
-              role: m.role === 'assistant' ? 'model' : 'user',
-              parts: [{ text: m.content }],
-            })),
-          }),
-        }
-      );
-
-      if (!geminiRes.ok) {
-        const errText = await geminiRes.text();
-        return { statusCode: 502, body: JSON.stringify({ error: 'AI request failed', detail: errText }) };
-      }
-
-      const geminiData = await geminiRes.json();
-      reply = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    } else {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const geminiRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent`,
+      {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
-          'x-api-key': process.env.ANTHROPIC_API_KEY,
-          'anthropic-version': '2023-06-01',
+          'x-goog-api-key': process.env.GEMINI_API_KEY,
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-5',
-          max_tokens: 700,
-          system: systemPrompt,
-          messages: messages,
+          system_instruction: { parts: [{ text: systemPrompt }] },
+          contents: messages.map(m => ({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: m.content }],
+          })),
         }),
-      });
-
-      if (!response.ok) {
-        const errText = await response.text();
-        return { statusCode: 502, body: JSON.stringify({ error: 'AI request failed', detail: errText }) };
       }
+    );
 
-      const data = await response.json();
-      reply = data.content && data.content[0] ? data.content[0].text : '';
+    if (!geminiRes.ok) {
+      const errText = await geminiRes.text();
+      return { statusCode: 502, body: JSON.stringify({ error: 'AI request failed', detail: errText }) };
     }
+
+    const geminiData = await geminiRes.json();
+    const reply = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
     return {
       statusCode: 200,
