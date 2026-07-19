@@ -500,7 +500,7 @@
       }
 
       if (!res.ok) {
-        addBubble('assistant', 'Something went wrong: ' + (data.error || 'unknown error'));
+        addBubble('assistant', 'Something went wrong: ' + (data.error || 'unknown error') + (data.detail ? ('\n\nDetails: ' + data.detail) : ''));
         sendBtn.disabled = false;
         return;
       }
