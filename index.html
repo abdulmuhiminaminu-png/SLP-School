@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -347,6 +348,59 @@
     from{ opacity:0; transform: translateY(8px); }
     to{ opacity:1; transform: translateY(0); }
   }
+
+  /* WhatsApp floating button */
+  .wa-float{
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 50;
+  }
+  .wa-float-btn{
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--green);
+    color: #06110C;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(62,207,142,0.35);
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight: 600;
+  }
+  .wa-float-menu{
+    display:none;
+    position:absolute;
+    bottom: calc(100% + 10px);
+    right:0;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    min-width: 220px;
+    overflow:hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  }
+  .wa-float-menu.open{ display:block; }
+  .wa-float-menu a{
+    display:block;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--text);
+    text-decoration:none;
+    border-bottom: 1px solid var(--line);
+  }
+  .wa-float-menu a:last-child{ border-bottom:none; }
+  .wa-float-menu a:hover{ background: var(--green-dim); }
+  .wa-float-menu .role{
+    display:block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
 </style>
 </head>
 <body>
@@ -423,7 +477,7 @@
           <div class="level-desc">Where price action gets precise — this is the level most self-taught traders never actually nail down.</div>
           <div class="level-track">PRICE ACTION</div>
         </div>
-        <div class="badge locked">🔒 $40/mo</div>
+        <div class="badge locked">🔒 $10/mo</div>
       </div>
 
       <div class="level locked" onclick="location.href='lesson.html?level=5'">
@@ -433,7 +487,7 @@
           <div class="level-desc">Your first look at SLP — the strategy this whole school is built around.</div>
           <div class="level-track">SLP STRATEGY</div>
         </div>
-        <div class="badge locked">🔒 $40/mo</div>
+        <div class="badge locked">🔒 $10/mo</div>
       </div>
 
       <div class="level locked" onclick="location.href='lesson.html?level=6'">
@@ -443,7 +497,7 @@
           <div class="level-desc">Practice reading real charts through the SLP lens with the AI checking your reasoning.</div>
           <div class="level-track">SLP STRATEGY</div>
         </div>
-        <div class="badge locked">🔒 $40/mo</div>
+        <div class="badge locked">🔒 $10/mo</div>
       </div>
 
       <div class="level locked" onclick="location.href='lesson.html?level=7'">
@@ -453,7 +507,7 @@
           <div class="level-desc">The final level — full independence, with the AI as a second pair of eyes, not a crutch.</div>
           <div class="level-track">SLP STRATEGY</div>
         </div>
-        <div class="badge locked">🔒 $40/mo</div>
+        <div class="badge locked">🔒 $10/mo</div>
       </div>
 
     </div>
@@ -475,6 +529,26 @@
     <p>Educational content only — not financial advice.</p>
   </div>
 </footer>
+
+<div class="wa-float">
+  <div class="wa-float-menu" id="waFloatMenu">
+    <a href="https://wa.me/2349032802731" target="_blank" rel="noopener">Hakimi FX <span class="role">Founder</span></a>
+    <a href="https://wa.me/2348137207992" target="_blank" rel="noopener">Musty FX <span class="role">Team</span></a>
+    <a href="https://wa.me/2348023853147" target="_blank" rel="noopener">Breehamxy FX <span class="role">Team</span></a>
+  </div>
+  <button class="wa-float-btn" id="waFloatBtn">💬 Ask us</button>
+</div>
+
+<script>
+  const waFloatBtn = document.getElementById('waFloatBtn');
+  const waFloatMenu = document.getElementById('waFloatMenu');
+  waFloatBtn.addEventListener('click', () => waFloatMenu.classList.toggle('open'));
+  document.addEventListener('click', (e) => {
+    if (!waFloatBtn.contains(e.target) && !waFloatMenu.contains(e.target)) {
+      waFloatMenu.classList.remove('open');
+    }
+  });
+</script>
 
 </body>
 </html>
