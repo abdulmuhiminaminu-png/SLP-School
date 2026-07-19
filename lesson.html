@@ -319,18 +319,16 @@
   document.getElementById('levelTag').textContent = `LEVEL ${String(level).padStart(2,'0')}`;
   document.getElementById('levelTitle').textContent = levelInfo.title;
 
-  // Show the WhatsApp button only on levels 5, 6, 7.
-  if (level >= 5 && level <= 7) {
-    document.getElementById('waWrap').style.display = 'block';
-    const waBtn = document.getElementById('waBtn');
-    const waMenu = document.getElementById('waMenu');
-    waBtn.addEventListener('click', () => waMenu.classList.toggle('open'));
-    document.addEventListener('click', (e) => {
-      if (!waBtn.contains(e.target) && !waMenu.contains(e.target)) {
-        waMenu.classList.remove('open');
-      }
-    });
-  }
+  // Show the WhatsApp button on every level.
+  document.getElementById('waWrap').style.display = 'block';
+  const waBtn = document.getElementById('waBtn');
+  const waMenu = document.getElementById('waMenu');
+  waBtn.addEventListener('click', () => waMenu.classList.toggle('open'));
+  document.addEventListener('click', (e) => {
+    if (!waBtn.contains(e.target) && !waMenu.contains(e.target)) {
+      waMenu.classList.remove('open');
+    }
+  });
 
   const chatEl = document.getElementById('chat');
   const lockedArea = document.getElementById('lockedArea');
@@ -368,7 +366,7 @@
       <div class="locked-notice">
         <div class="icon">🔒</div>
         <h2>This level is part of the paid track</h2>
-        <p>Levels 4–7 unlock with an SLP School subscription ($40/mo) — that's where entries, timing, and the full SLP strategy live.</p>
+        <p>Levels 4–7 unlock with an SLP School subscription ($10/mo) — that's where entries, timing, and the full SLP strategy live.</p>
         <button class="unlock-btn" id="upgradeBtn">Upgrade to unlock</button>
         <div><button class="team-link" id="teamLinkBtn">Team member? Unlock with access code</button></div>
         <div class="team-form" id="teamForm" style="display:none;">
