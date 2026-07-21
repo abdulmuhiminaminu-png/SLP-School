@@ -469,7 +469,7 @@
     typingEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
 
     try {
-      const res = await fetch('/.netlify/functions/tutor', {
+      const res = await fetch('/api/tutor', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({

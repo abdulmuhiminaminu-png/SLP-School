@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SLP School — Learn Forex, One Level at a Time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0B0F14;
+    --bg-raised: #121821;
+    --line: #1E2833;
+    --text: #EDEFF2;
+    --text-dim: #8A97A6;
+    --green: #3ECF8E;
+    --green-dim: rgba(62,207,142,0.14);
+    --amber: #E2A03E;
+    --red: #D14D4D;
+    --serif: 'Fraunces', serif;
+    --sans: 'IBM Plex Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a{ color: inherit; }
+
+  .wrap{
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- NAV ---------- */
+  nav{
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    background: rgba(11,15,20,0.88);
+    backdrop-filter: blur(8px);
+    z-index: 10;
+  }
+  nav .wrap{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    height: 64px;
+  }
+  .brand{
+    font-family: var(--mono);
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .brand .dot{
+    width:8px; height:8px; border-radius:50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+  }
+  .nav-cta{
+    font-family: var(--mono);
+    font-size: 13px;
+    border: 1px solid var(--line);
+    padding: 8px 16px;
+    border-radius: 3px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color .15s ease;
+  }
+  .nav-cta:hover{ border-color: var(--green); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding: 100px 0 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .eyebrow{
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 20px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:'';
+    width: 20px; height: 1px;
+    background: var(--green);
+  }
+  h1{
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(38px, 6vw, 64px);
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+    max-width: 11ch;
+  }
+  h1 em{
+    font-style: italic;
+    color: var(--green);
+    font-weight: 500;
+  }
+  .hero-sub{
+    margin-top: 22px;
+    max-width: 46ch;
+    font-size: 17px;
+    color: var(--text-dim);
+  }
+  .hero-actions{
+    margin-top: 36px;
+    display:flex;
+    gap: 14px;
+    align-items:center;
+    flex-wrap: wrap;
+  }
+  .btn-primary{
+    background: var(--green);
+    color: #06110C;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 14px 26px;
+    border-radius: 4px;
+    text-decoration: none;
+    display:inline-block;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(62,207,142,0.25);
+  }
+  .btn-secondary{
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 2px;
+  }
+  .btn-secondary:hover{ color: var(--text); border-color: var(--text-dim); }
+
+  /* chart flourish */
+  .chart-line{
+    margin-top: 70px;
+    height: 90px;
+    width: 100%;
+    max-width: 620px;
+  }
+
+  /* ---------- LADDER SECTION ---------- */
+  .ladder-section{
+    padding: 60px 0 120px;
+    border-top: 1px solid var(--line);
+  }
+  .section-head{
+    margin-bottom: 56px;
+  }
+  .section-head .eyebrow{ color: var(--text-dim); }
+  .section-head .eyebrow::before{ background: var(--text-dim); }
+  h2{
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(26px, 3.4vw, 34px);
+    max-width: 20ch;
+  }
+  .section-head p{
+    margin-top: 14px;
+    color: var(--text-dim);
+    max-width: 52ch;
+    font-size: 15.5px;
+  }
+
+  .ladder{
+    position: relative;
+    padding-left: 46px;
+  }
+  .ladder::before{
+    content:'';
+    position:absolute;
+    left: 13px;
+    top: 10px;
+    bottom: 10px;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--green) 0%, var(--green) 42%, var(--line) 42%, var(--line) 100%);
+  }
+
+  .level{
+    position: relative;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: 16px;
+    cursor: pointer;
+    transition: padding-left .15s ease;
+  }
+  .level:hover{ padding-left: 6px; }
+  .level:hover .level-title{ color: var(--green); }
+  .level:last-child{ border-bottom: none; }
+
+  .level::before{
+    content:'';
+    position:absolute;
+    left: -46px;
+    top: 27px;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--green);
+  }
+  .level.locked::before{
+    border-color: var(--text-dim);
+  }
+
+  .level-num{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--green);
+    letter-spacing: 0.05em;
+  }
+  .level.locked .level-num{ color: var(--text-dim); }
+
+  .level-title{
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 500;
+    margin-top: 6px;
+  }
+  .level-desc{
+    margin-top: 6px;
+    color: var(--text-dim);
+    font-size: 14.5px;
+    max-width: 48ch;
+  }
+  .level-track{
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-top: 14px;
+  }
+
+  .badge{
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    height: fit-content;
+  }
+  .badge.free{
+    background: var(--green-dim);
+    color: var(--green);
+  }
+  .badge.locked{
+    background: rgba(226,160,62,0.12);
+    color: var(--amber);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  /* ---------- STRATEGY CALLOUT ---------- */
+  .callout{
+    margin-top: 60px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    border-radius: 8px;
+    padding: 32px;
+    display:grid;
+    grid-template-columns: auto 1fr;
+    gap: 24px;
+    align-items: center;
+  }
+  .callout-mark{
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 40px;
+    color: var(--green);
+  }
+  .callout h3{
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .callout p{
+    margin-top: 6px;
+    color: var(--text-dim);
+    font-size: 14.5px;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top: 1px solid var(--line);
+    padding: 32px 0;
+  }
+  footer .wrap{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  footer p{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 640px){
+    .callout{ grid-template-columns: 1fr; text-align: left; }
+    .level{ grid-template-columns: 1fr; }
+    .badge{ justify-self: start; }
+  }
+
+  @media (prefers-reduced-motion: no-preference){
+    .level{
+      opacity: 0;
+      animation: rise .5s ease forwards;
+    }
+    .level:nth-child(1){ animation-delay: .05s; }
+    .level:nth-child(2){ animation-delay: .1s; }
+    .level:nth-child(3){ animation-delay: .15s; }
+    .level:nth-child(4){ animation-delay: .2s; }
+    .level:nth-child(5){ animation-delay: .25s; }
+    .level:nth-child(6){ animation-delay: .3s; }
+    .level:nth-child(7){ animation-delay: .35s; }
+  }
+  @keyframes rise{
+    from{ opacity:0; transform: translateY(8px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  /* WhatsApp floating button */
+  .wa-float{
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 50;
+  }
+  .wa-float-btn{
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--green);
+    color: #06110C;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(62,207,142,0.35);
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight: 600;
+  }
+  .wa-float-menu{
+    display:none;
+    position:absolute;
+    bottom: calc(100% + 10px);
+    right:0;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    min-width: 220px;
+    overflow:hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  }
+  .wa-float-menu.open{ display:block; }
+  .wa-float-menu a{
+    display:block;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--text);
+    text-decoration:none;
+    border-bottom: 1px solid var(--line);
+  }
+  .wa-float-menu a:last-child{ border-bottom:none; }
+  .wa-float-menu a:hover{ background: var(--green-dim); }
+  .wa-float-menu .role{
+    display:block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> SLP SCHOOL</div>
+    <a class="nav-cta" href="#ladder">See the curriculum</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">AI Forex Tutor · 7 Levels</div>
+    <h1>Learn to read the market, <em>not</em> just follow calls.</h1>
+    <p class="hero-sub">A step-by-step AI teacher that takes you from your first candle to trading your own strategy — no fluff, no signal groups, just the levels in order.</p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="lesson.html?level=1">Start at Level 1 — free</a>
+      <a class="btn-secondary" href="#ladder">View all 7 levels ↓</a>
+    </div>
+
+    <svg class="chart-line" viewBox="0 0 620 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="0,75 60,68 100,72 140,55 180,60 220,40 260,46 300,28 340,34 380,18 420,22 460,10 500,15 540,4 580,8 620,-2"
+        stroke="#3ECF8E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+      <line x1="0" y1="89" x2="620" y2="89" stroke="#1E2833" stroke-width="1"/>
+    </svg>
+  </div>
+</header>
+
+<section class="ladder-section" id="ladder">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">The curriculum</div>
+      <h2>Seven levels. Each one unlocks the next.</h2>
+      <p>You can't skip ahead — every level builds on the last, the same way you'd actually learn to trade for real.</p>
+    </div>
+
+    <div class="ladder">
+
+      <div class="level" onclick="location.href='lesson.html?level=1'">
+        <div>
+          <div class="level-num">LEVEL 01</div>
+          <div class="level-title">What Moves Price</div>
+          <div class="level-desc">The absolute basics of market structure — highs, lows, and why price moves the way it does.</div>
+          <div class="level-track">MARKET STRUCTURE</div>
+        </div>
+        <div class="badge free">Free</div>
+      </div>
+
+      <div class="level" onclick="location.href='lesson.html?level=2'">
+        <div>
+          <div class="level-num">LEVEL 02</div>
+          <div class="level-title">Reading Trend & Structure Shifts</div>
+          <div class="level-desc">Spot when the market is trending, ranging, or about to reverse — before it happens.</div>
+          <div class="level-track">MARKET STRUCTURE</div>
+        </div>
+        <div class="badge free">Free</div>
+      </div>
+
+      <div class="level" onclick="location.href='lesson.html?level=3'">
+        <div>
+          <div class="level-num">LEVEL 03</div>
+          <div class="level-title">Candles With Intent</div>
+          <div class="level-desc">Price action patterns that actually mean something — and the ones you should ignore.</div>
+          <div class="level-track">PRICE ACTION</div>
+        </div>
+        <div class="badge free">Free</div>
+      </div>
+
+      <div class="level locked" onclick="location.href='lesson.html?level=4'">
+        <div>
+          <div class="level-num">LEVEL 04</div>
+          <div class="level-title">Entries, Confirmation & Timing</div>
+          <div class="level-desc">Where price action gets precise — this is the level most self-taught traders never actually nail down.</div>
+          <div class="level-track">PRICE ACTION</div>
+        </div>
+        <div class="badge locked">🔒 $10/mo</div>
+      </div>
+
+      <div class="level locked" onclick="location.href='lesson.html?level=5'">
+        <div>
+          <div class="level-num">LEVEL 05</div>
+          <div class="level-title">The SLP Framework</div>
+          <div class="level-desc">Your first look at SLP — the strategy this whole school is built around.</div>
+          <div class="level-track">SLP STRATEGY</div>
+        </div>
+        <div class="badge locked">🔒 $10/mo</div>
+      </div>
+
+      <div class="level locked" onclick="location.href='lesson.html?level=6'">
+        <div>
+          <div class="level-num">LEVEL 06</div>
+          <div class="level-title">Applying SLP Live</div>
+          <div class="level-desc">Practice reading real charts through the SLP lens with the AI checking your reasoning.</div>
+          <div class="level-track">SLP STRATEGY</div>
+        </div>
+        <div class="badge locked">🔒 $10/mo</div>
+      </div>
+
+      <div class="level locked" onclick="location.href='lesson.html?level=7'">
+        <div>
+          <div class="level-num">LEVEL 07</div>
+          <div class="level-title">Trading SLP On Your Own</div>
+          <div class="level-desc">The final level — full independence, with the AI as a second pair of eyes, not a crutch.</div>
+          <div class="level-track">SLP STRATEGY</div>
+        </div>
+        <div class="badge locked">🔒 $10/mo</div>
+      </div>
+
+    </div>
+
+    <div class="callout">
+      <div class="callout-mark">“</div>
+      <div>
+        <h3>Why not just follow signals?</h3>
+        <p>Because signals run out the moment you stop paying. SLP School teaches you to see the setup yourself — level 7 is you trading it without needing anyone else's call.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>SLP SCHOOL</p>
+    <p>Educational content only — not financial advice.</p>
+  </div>
+</footer>
+
+<div class="wa-float">
+  <div class="wa-float-menu" id="waFloatMenu">
+    <a href="https://wa.me/2349032802731" target="_blank" rel="noopener">Hakimi FX <span class="role">Founder</span></a>
+    <a href="https://wa.me/2348137207992" target="_blank" rel="noopener">Musty FX <span class="role">Team</span></a>
+    <a href="https://wa.me/2348023853147" target="_blank" rel="noopener">Breehamxy FX <span class="role">Team</span></a>
+  </div>
+  <button class="wa-float-btn" id="waFloatBtn">💬 Ask us</button>
+</div>
+
+<script>
+  const waFloatBtn = document.getElementById('waFloatBtn');
+  const waFloatMenu = document.getElementById('waFloatMenu');
+  waFloatBtn.addEventListener('click', () => waFloatMenu.classList.toggle('open'));
+  document.addEventListener('click', (e) => {
+    if (!waFloatBtn.contains(e.target) && !waFloatMenu.contains(e.target)) {
+      waFloatMenu.classList.remove('open');
+    }
+  });
+</script>
+
+</body>
+</html>
