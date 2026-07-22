@@ -86,32 +86,32 @@ Rules:
   ];
 
   try {
-    const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,
-      {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-goog-api-key': process.env.GEMINI_API_KEY,
-        },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: systemPrompt }] },
-          contents: messages.map(m => ({
-            role: m.role === 'assistant' ? 'model' : 'user',
-            parts: [{ text: m.content }],
+    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...messages.map(m => ({
+            role: m.role === 'assistant' ? 'assistant' : 'user',
+            content: typeof m.content === 'string' ? m.content : String(m.content || ''),
           })),
-        }),
-      }
-    );
+        ],
+      }),
+    });
 
-    if (!geminiRes.ok) {
-      const errText = await geminiRes.text();
+    if (!groqRes.ok) {
+      const errText = await groqRes.text();
       res.status(502).json({ error: 'AI request failed', detail: errText });
       return;
     }
 
-    const geminiData = await geminiRes.json();
-    const reply = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const groqData = await groqRes.json();
+    const reply = groqData.choices?.[0]?.message?.content || '';
 
     res.status(200).json({ reply });
   } catch (e) {
