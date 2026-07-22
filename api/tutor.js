@@ -85,8 +85,14 @@ Rules:
 - Keep responses focused — a few paragraphs at most, not an essay, unless the student asks for more depth.
 - End your first message in a new conversation with one question to check the student is following, but don't do this every single message.`;
 
+  // Only keep the last 6 messages (3 back-and-forth exchanges) of history.
+  // Older context gets dropped — this is the single biggest lever on token
+  // usage, since without it every message in a long conversation resends
+  // the entire chat so far, every single time.
+  const trimmedHistory = Array.isArray(history) ? history.slice(-6) : [];
+
   const messages = [
-    ...(Array.isArray(history) ? history : []),
+    ...trimmedHistory,
     { role: 'user', content: message },
   ];
 
@@ -99,6 +105,7 @@ Rules:
       },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
+        max_tokens: 500,
         messages: [
           { role: 'system', content: systemPrompt },
           ...messages.map(m => ({
