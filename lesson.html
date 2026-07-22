@@ -419,7 +419,7 @@
         sendMessage();
       }
     });
-    sendBtn.addEventListener('click', sendMessage);
+    sendBtn.addEventListener('click', () => sendMessage());
 
     // Kick off the lesson automatically with an opening message.
     sendMessage("Let's start this lesson.", true);
